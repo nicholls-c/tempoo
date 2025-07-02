@@ -1,7 +1,8 @@
 # tempoo-go
 
 - [tempoo-go](#tempoo-go)
-  - [Auth:](#auth)
+  - [Links](#links)
+  - [Auth](#auth)
   - [Use](#use)
     - [Using a binary](#using-a-binary)
     - [Add worklog](#add-worklog)
@@ -11,7 +12,13 @@
   - [Test](#test)
 
 
-## Auth:
+## Links
+
+- [Kong](https://github.com/alecthomas/kong)
+
+<br>
+
+## Auth
 
 Expose user email address and Jira API token:
 
@@ -76,3 +83,5 @@ go test -bench=. ./cmd/...
 
 go test -cover ./cmd/...
 ```
+
+<br>
