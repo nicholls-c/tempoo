@@ -51,7 +51,7 @@ type WorklogData map[string]interface{}
 type Tempoo struct {
 	email    string
 	apiToken string
-	client   *resty.Client
+	client   *resty.Client // resty client for making HTTP requests to the Jira API
 }
 
 // NewTempoo creates a new Tempoo client
@@ -68,10 +68,12 @@ func NewTempoo() (*Tempoo, error) {
 	}
 	logrus.Debug("Read JIRA_API_TOKEN from env")
 
+	// create a new resty client
 	client := resty.New()
 	client.SetBasicAuth(email, apiToken)
 	client.SetHeader("Content-Type", "application/json")
 	client.SetTimeout(10 * time.Second)
+
 	logrus.Debugf("Created Resty client: %+v", client)
 
 	t := &Tempoo{
@@ -87,6 +89,7 @@ func NewTempoo() (*Tempoo, error) {
 // validateIssueKey validates that an issue key exists
 func (t *Tempoo) validateIssueKey(issueKey string) error {
 	issueURL := fmt.Sprintf("%s/issue/%s", JiraAPIRootURL, issueKey)
+	logrus.Debugf("Validating issue key: %s", issueURL)
 
 	resp, err := t.client.R().Get(issueURL)
 	if err != nil {
@@ -97,6 +100,7 @@ func (t *Tempoo) validateIssueKey(issueKey string) error {
 	if resp.StatusCode() != 200 {
 		return &InvalidIssueKeyError{IssueKey: issueKey}
 	}
+	logrus.Debugf("Validated issue key: %s", issueKey)
 
 	return nil
 }
@@ -110,6 +114,7 @@ func (t *Tempoo) GetUserAccountID() (string, error) {
 		logrus.Errorf("Request failed: %v", err)
 		return "", &TempooError{Message: "API request failed", Cause: err}
 	}
+	logrus.Debugf("Response: %s", resp.StatusCode())
 
 	if resp.StatusCode() != 200 {
 		return "", &TempooError{Message: fmt.Sprintf("Failed to get user info: %s", resp.Status())}
@@ -124,8 +129,8 @@ func (t *Tempoo) GetUserAccountID() (string, error) {
 	if !ok || accountID == "" {
 		return "", &TempooError{Message: "Account ID not found in user data"}
 	}
-
 	logrus.Infof("Current user Atlassian account ID: %s", accountID)
+
 	return accountID, nil
 }
 
