@@ -5,6 +5,8 @@
   - [Use](#use)
     - [Add worklog](#add-worklog)
     - [Remove worklogs:](#remove-worklogs)
+    - [Flags](#flags)
+  - [Build](#build)
 
 
 ## Auth:
@@ -32,7 +34,19 @@ go run cmd/main.go add-worklog -i INF-88 -t 1h
 ### Remove worklogs:
 
 ```sh
-
+go run cmd/main.go remove-worklog --issue-key INF-88
 ```
 
 <br>
+
+### Flags
+
+Supply `-d` to any command to get verbose output.
+
+<br>
+
+## Build
+
+```sh
+goreleaser check
+```

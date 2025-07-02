@@ -13,7 +13,9 @@ import (
 )
 
 const (
-	JiraFQDN       = "esendex.atlassian.net"
+	// JiraFQDN is the FQDN of the Jira instance
+	JiraFQDN = "esendex.atlassian.net"
+	// JiraAPIRootURL is the root URL of the Jira API
 	JiraAPIRootURL = "https://" + JiraFQDN + "/rest/api/3"
 )
 
@@ -23,6 +25,7 @@ type TempooError struct {
 	Cause   error
 }
 
+// Error returns the error message
 func (e *TempooError) Error() string {
 	if e.Cause != nil {
 		return fmt.Sprintf("%s: %v", e.Message, e.Cause)
@@ -30,10 +33,12 @@ func (e *TempooError) Error() string {
 	return e.Message
 }
 
+// InvalidIssueKeyError is an error type for invalid issue keys
 type InvalidIssueKeyError struct {
 	IssueKey string
 }
 
+// Error returns the error message
 func (e *InvalidIssueKeyError) Error() string {
 	return fmt.Sprintf("Issue key %s is not valid", e.IssueKey)
 }
@@ -55,16 +60,19 @@ func NewTempoo() (*Tempoo, error) {
 	if email == "" {
 		return nil, &TempooError{Message: "JIRA_EMAIL environment variable is not set"}
 	}
+	logrus.Debugf("Read JIRA_EMAIL from env: %s", email)
 
 	apiToken := os.Getenv("JIRA_API_TOKEN")
 	if apiToken == "" {
 		return nil, &TempooError{Message: "JIRA_API_TOKEN environment variable is not set"}
 	}
+	logrus.Debug("Read JIRA_API_TOKEN from env")
 
 	client := resty.New()
 	client.SetBasicAuth(email, apiToken)
 	client.SetHeader("Content-Type", "application/json")
 	client.SetTimeout(10 * time.Second)
+	logrus.Debugf("Created Resty client: %+v", client)
 
 	t := &Tempoo{
 		email:    email,
