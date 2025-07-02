@@ -3,10 +3,12 @@
 - [tempoo-go](#tempoo-go)
   - [Auth:](#auth)
   - [Use](#use)
+    - [Using a binary](#using-a-binary)
     - [Add worklog](#add-worklog)
     - [Remove worklogs:](#remove-worklogs)
     - [Flags](#flags)
   - [Build](#build)
+  - [Test](#test)
 
 
 ## Auth:
@@ -22,9 +24,17 @@ export JIRA_API_TOKEN=asdasdasdasdasdasdasdasdasd
 
 ## Use
 
+### Using a binary
+
+```sh
+chmod +x ./dist/tempoo
+sudo mv ./tempoo /usr/local/bin
+```
+
 ### Add worklog
 
 ```sh
+# uncompiled
 go run cmd/main.go add-worklog --issue-key INF-88 --time 3h
 go run cmd/main.go add-worklog -i INF-88 -t 1h
 ```
@@ -48,5 +58,21 @@ Supply `-d` to any command to get verbose output.
 ## Build
 
 ```sh
+# validate
 goreleaser check
+
+# build
+goreleaser release --snapshot --clean
+```
+
+<br>
+
+## Test
+
+```sh
+go test -v ./cmd/...
+
+go test -bench=. ./cmd/...
+
+go test -cover ./cmd/...
 ```
