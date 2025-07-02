@@ -84,12 +84,14 @@ func main() {
 		kong.UsageOnError(),
 	)
 
-	// Set up logging
+	// Set up logrus logging
+	//TODO: replace with zap/apex log library
 	if CLI.Debug {
 		logrus.SetLevel(logrus.DebugLevel)
 	} else {
 		logrus.SetLevel(logrus.InfoLevel)
 	}
+	logrus.SetReportCaller(false)
 
 	// Execute the command
 	err := ctx.Run()

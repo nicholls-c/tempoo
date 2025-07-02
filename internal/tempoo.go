@@ -70,8 +70,11 @@ func NewTempoo() (*Tempoo, error) {
 
 	// create a new resty client
 	client := resty.New()
+	// set auth
 	client.SetBasicAuth(email, apiToken)
+	// build header
 	client.SetHeader("Content-Type", "application/json")
+	// set default timeout
 	client.SetTimeout(10 * time.Second)
 
 	logrus.Debugf("Created Resty client: %+v", client)
