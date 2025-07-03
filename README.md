@@ -5,6 +5,8 @@
   - [Auth](#auth)
   - [Use](#use)
     - [Using a binary](#using-a-binary)
+      - [Linux](#linux)
+      - [Windows](#windows)
     - [Add worklog](#add-worklog)
     - [Remove worklogs:](#remove-worklogs)
     - [Flags](#flags)
@@ -34,10 +36,20 @@ export JIRA_API_TOKEN=asdasdasdasdasdasdasdasdasd
 
 ### Using a binary
 
+#### Linux
+
 ```sh
 chmod +x ./dist/tempoo
 sudo mv ./tempoo /usr/local/bin
 ```
+
+#### Windows
+
+```pwsh
+.\tempoo_0.0.2_windows_amd64.exe -h
+```
+
+<br>
 
 ### Add worklog
 
