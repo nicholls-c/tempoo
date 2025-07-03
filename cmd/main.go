@@ -13,9 +13,11 @@ import (
 // version will be set by goreleaser at build time
 var version = "0.0.1-dev"
 
+// Global factory instance
+var tempooFactory *internal.TempooFactory
+
 // VersionCmd represents the version command
-type VersionCmd struct {
-}
+type VersionCmd struct{}
 
 // Run executes the version command
 func (cmd *VersionCmd) Run() error {
@@ -30,13 +32,9 @@ type AddWorklogCmd struct {
 	Date     *string `help:"Date for the worklog in DD.MM.YYYY format (defaults to today)" short:"D"`
 }
 
-// run executes the add worklog command
+// Run executes the add worklog command
 func (cmd *AddWorklogCmd) Run() error {
-	tempoo, err := internal.NewTempoo()
-	if err != nil {
-		return err
-	}
-
+	tempoo := tempooFactory.GetClient()
 	return tempoo.AddWorklog(cmd.IssueKey, cmd.Time, cmd.Date)
 }
 
@@ -45,24 +43,21 @@ type RemoveWorklogCmd struct {
 	IssueKey string `help:"Jira issue key (e.g., PROJ-123)" short:"i" required:""`
 }
 
-// run executes the remove worklog command
+// Run executes the remove worklog command
 func (cmd *RemoveWorklogCmd) Run() error {
-	tempoo, err := internal.NewTempoo()
-	if err != nil {
-		return err
-	}
+	tempoo := tempooFactory.GetClient()
 
 	// get current user's account ID
 	userID, err := tempoo.GetUserAccountID()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to get user account ID: %w", err)
 	}
 	log.Debugf("User ID: %s", userID)
 
 	// get worklogs for the user
 	worklogIDs, err := tempoo.GetWorklogs(cmd.IssueKey, userID)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to get worklogs: %w", err)
 	}
 	log.Debugf("Worklog IDs: %+v", worklogIDs)
 
@@ -76,7 +71,7 @@ func (cmd *RemoveWorklogCmd) Run() error {
 	for _, worklogID := range worklogIDs {
 		log.Debugf("Deleting worklog ID: %s", worklogID)
 		if err := tempoo.DeleteWorklog(cmd.IssueKey, worklogID); err != nil {
-			return err
+			return fmt.Errorf("failed to delete worklog %s: %w", worklogID, err)
 		}
 		log.Infof("Worklog ID %s deleted", worklogID)
 	}
@@ -89,13 +84,9 @@ type ListWorklogsCmd struct {
 	IssueKey string `help:"Jira issue key (e.g., PROJ-123)" short:"i" required:""`
 }
 
-// run executes the list worklogs command
+// Run executes the list worklogs command
 func (cmd *ListWorklogsCmd) Run() error {
-	tempoo, err := internal.NewTempoo()
-	if err != nil {
-		return err
-	}
-
+	tempoo := tempooFactory.GetClient()
 	return tempoo.ListWorklogs(cmd.IssueKey)
 }
 
@@ -111,12 +102,11 @@ var CLI struct {
 
 // main function
 func main() {
-	// check for version flag before parsing and print
-	for _, arg := range os.Args[1:] {
-		if arg == "--version" || arg == "-v" {
-			fmt.Println(version)
-			os.Exit(0)
-		}
+	// Initialize the factory once at startup
+	var err error
+	tempooFactory, err = internal.NewTempooFactory()
+	if err != nil {
+		log.Fatalf("Failed to initialize Tempoo factory: %v", err)
 	}
 
 	// print help by default unless -v flag is set
@@ -140,6 +130,6 @@ func main() {
 	}
 
 	// execute kong
-	err := ctx.Run()
+	err = ctx.Run()
 	ctx.FatalIfErrorf(err)
 }
