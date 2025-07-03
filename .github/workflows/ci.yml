@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - "v*.*.*"
+    branches:
+      - "*"
 
 permissions:
   contents: write
@@ -22,7 +24,28 @@ jobs:
         with:
           go-version: 1.24
 
+      # Install gotestfmt on the VM running the action.
+      - name: Set up gotestfmt
+        uses: gotesttools/gotestfmt-action@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run tests
+        run: |
+          set -euo pipefail
+          #go test -json -v ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
+          go test -race -json -v -coverprofile=coverage.txt ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
+
+    #   - name: Upload test log
+    #     uses: actions/upload-artifact@v2
+    #     if: always()
+    #     with:
+    #       name: test-log
+    #       path: /tmp/gotest.log
+    #       if-no-files-found: error
+
       - name: Run GoReleaser
+        if: startsWith(github.ref, 'refs/tags/')
         uses: goreleaser/goreleaser-action@v6
         with:
           distribution: goreleaser
