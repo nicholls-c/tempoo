@@ -71,7 +71,7 @@ go run cmd/main.go remove-worklog --issue-key INF-88
 
 ### Flags
 
-Supply `-d` to any command to get verbose output.
+Supply `-v` to any command to get verbose debug output.
 
 <br>
 

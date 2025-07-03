@@ -6,7 +6,8 @@ import (
 	"tempoo/internal"
 
 	"github.com/alecthomas/kong"
-	"github.com/sirupsen/logrus"
+	"github.com/apex/log"
+	"github.com/apex/log/handlers/cli"
 )
 
 // version will be set by goreleaser at build time
@@ -26,7 +27,7 @@ func (cmd *VersionCmd) Run() error {
 type AddWorklogCmd struct {
 	IssueKey string  `help:"Jira issue key (e.g., PROJ-123)" short:"i" required:""`
 	Time     string  `help:"Time to log (e.g., 1h 30m, 2h, 45m)" short:"t" required:""`
-	Date     *string `help:"Date for the worklog in DD.MM.YYYY format (defaults to today)" short:"d"`
+	Date     *string `help:"Date for the worklog in DD.MM.YYYY format (defaults to today)" short:"D"`
 }
 
 // RemoveWorklogCmd represents the remove worklog command
@@ -56,28 +57,28 @@ func (cmd *RemoveWorklogCmd) Run() error {
 	if err != nil {
 		return err
 	}
-	logrus.Debugf("User ID: %s", userID)
+	log.Debugf("User ID: %s", userID)
 
 	// get worklogs for the user
 	worklogIDs, err := tempoo.GetWorklogs(cmd.IssueKey, userID)
 	if err != nil {
 		return err
 	}
-	logrus.Debugf("Worklog IDs: %+v", worklogIDs)
+	log.Debugf("Worklog IDs: %+v", worklogIDs)
 
 	// check if there are worklogs to remove
 	if len(worklogIDs) == 0 {
-		logrus.Infof("No worklogs found for issue %s", cmd.IssueKey)
+		log.Infof("No worklogs found for issue %s", cmd.IssueKey)
 		return nil
 	}
 
 	// delete all worklogs for the user
 	for _, worklogID := range worklogIDs {
-		logrus.Debugf("Deleting worklog ID: %s", worklogID)
+		log.Debugf("Deleting worklog ID: %s", worklogID)
 		if err := tempoo.DeleteWorklog(cmd.IssueKey, worklogID); err != nil {
 			return err
 		}
-		logrus.Infof("Worklog ID %s deleted", worklogID)
+		log.Infof("Worklog ID %s deleted", worklogID)
 	}
 
 	return nil
@@ -114,14 +115,13 @@ func main() {
 		kong.UsageOnError(),
 	)
 
-	// set up logrus logging
-	//TODO: replace with zap/apex log library
+	// set up apex/log with CLI handler
+	log.SetHandler(cli.New(os.Stderr))
 	if CLI.Verbose {
-		logrus.SetLevel(logrus.DebugLevel)
+		log.SetLevel(log.DebugLevel)
 	} else {
-		logrus.SetLevel(logrus.InfoLevel)
+		log.SetLevel(log.InfoLevel)
 	}
-	logrus.SetReportCaller(false)
 
 	// execute kong
 	err := ctx.Run()

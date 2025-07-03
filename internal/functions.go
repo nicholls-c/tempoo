@@ -7,36 +7,36 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sirupsen/logrus"
+	"github.com/apex/log"
 )
 
 func (t *Tempoo) validateIssueKey(issueKey string) error {
 	issueURL := fmt.Sprintf("%s/issue/%s", JiraAPIRootURL, issueKey)
-	logrus.Debugf("Validating issue key: %s", issueURL)
+	log.Debugf("Validating issue key: %s", issueURL)
 
 	resp, err := t.client.R().Get(issueURL)
 	if err != nil {
-		logrus.Errorf("Request failed: %v", err)
+		log.Errorf("Request failed: %v", err)
 		return &TempooError{Message: "API request failed", Cause: err}
 	}
 
 	if resp.StatusCode() != 200 {
 		return &InvalidIssueKeyError{IssueKey: issueKey}
 	}
-	logrus.Debugf("Validated issue key: %s", issueKey)
+	log.Debugf("Validated issue key: %s", issueKey)
 
 	return nil
 }
 
 func (t *Tempoo) GetUserAccountID() (string, error) {
-	logrus.Info("Getting current user Atlassian account ID...")
+	log.Info("Getting current user Atlassian account ID...")
 
 	resp, err := t.client.R().Get(fmt.Sprintf("%s/myself", JiraAPIRootURL))
 	if err != nil {
-		logrus.Errorf("Request failed: %v", err)
+		log.Errorf("Request failed: %v", err)
 		return "", &TempooError{Message: "API request failed", Cause: err}
 	}
-	logrus.Debugf("Response: %s", resp.StatusCode())
+	log.Debugf("Response: %s", resp.StatusCode())
 
 	if resp.StatusCode() != 200 {
 		return "", &TempooError{Message: fmt.Sprintf("Failed to get user info: %s", resp.Status())}
@@ -51,13 +51,13 @@ func (t *Tempoo) GetUserAccountID() (string, error) {
 	if !ok || accountID == "" {
 		return "", &TempooError{Message: "Account ID not found in user data"}
 	}
-	logrus.Infof("Current user Atlassian account ID: %s", accountID)
+	log.Infof("Current user Atlassian account ID: %s", accountID)
 
 	return accountID, nil
 }
 
 func (t *Tempoo) GetWorklogs(issueKey, userID string) ([]string, error) {
-	logrus.Infof("Getting worklogs for %s", issueKey)
+	log.Infof("Getting worklogs for %s", issueKey)
 
 	if err := t.validateIssueKey(issueKey); err != nil {
 		return nil, err
@@ -65,7 +65,7 @@ func (t *Tempoo) GetWorklogs(issueKey, userID string) ([]string, error) {
 
 	resp, err := t.client.R().Get(fmt.Sprintf("%s/issue/%s/worklog", JiraAPIRootURL, issueKey))
 	if err != nil {
-		logrus.Errorf("Request failed: %v", err)
+		log.Errorf("Request failed: %v", err)
 		return nil, &TempooError{Message: "API request failed", Cause: err}
 	}
 
@@ -117,12 +117,12 @@ func (t *Tempoo) GetWorklogs(issueKey, userID string) ([]string, error) {
 		worklogsForUser = append(worklogsForUser, worklogIDStr)
 	}
 
-	logrus.Debugf("Found %d worklogs for user %s", len(worklogsForUser), userID)
+	log.Debugf("Found %d worklogs for user %s", len(worklogsForUser), userID)
 	return worklogsForUser, nil
 }
 
 func (t *Tempoo) AddWorklog(issueKey, worklogTime string, dateStr *string) error {
-	logrus.Infof("Adding worklog to %s", issueKey)
+	log.Infof("Adding worklog to %s", issueKey)
 
 	// Use current date if none provided
 	var workDate time.Time
@@ -143,26 +143,26 @@ func (t *Tempoo) AddWorklog(issueKey, worklogTime string, dateStr *string) error
 		time.UTC,
 	).Format("2006-01-02T15:04:05.000-0700")
 
-	logrus.Debugf("Started timestamp: %s", started)
+	log.Debugf("Started timestamp: %s", started)
 
 	payload := map[string]string{
 		"timeSpent": worklogTime,
 		"started":   started,
 	}
 
-	logrus.Debugf("Payload: %+v", payload)
+	log.Debugf("Payload: %+v", payload)
 
 	resp, err := t.client.R().
 		SetBody(payload).
 		Post(fmt.Sprintf("%s/issue/%s/worklog", JiraAPIRootURL, issueKey))
 
 	if err != nil {
-		logrus.Errorf("Request failed: %v", err)
+		log.Errorf("Request failed: %v", err)
 		return &TempooError{Message: "API request failed", Cause: err}
 	}
 
 	if resp.StatusCode() == 201 {
-		logrus.Infof("Worklog added to %s", issueKey)
+		log.Infof("Worklog added to %s", issueKey)
 		return nil
 	}
 
@@ -196,11 +196,11 @@ func parseDateString(dateStr string) (time.Time, error) {
 }
 
 func (t *Tempoo) DeleteWorklog(issueKey, worklogID string) error {
-	logrus.Debugf("Deleting worklog %s for %s", worklogID, issueKey)
+	log.Debugf("Deleting worklog %s for %s", worklogID, issueKey)
 
 	resp, err := t.client.R().Delete(fmt.Sprintf("%s/issue/%s/worklog/%s", JiraAPIRootURL, issueKey, worklogID))
 	if err != nil {
-		logrus.Errorf("Request failed: %v", err)
+		log.Errorf("Request failed: %v", err)
 		return &TempooError{Message: "API request failed", Cause: err}
 	}
 
@@ -208,6 +208,6 @@ func (t *Tempoo) DeleteWorklog(issueKey, worklogID string) error {
 		return &TempooError{Message: fmt.Sprintf("Failed to delete worklog: %s", resp.Status())}
 	}
 
-	logrus.Infof("Deleted worklog %s for %s", worklogID, issueKey)
+	log.Infof("Deleted worklog %s for %s", worklogID, issueKey)
 	return nil
 }
