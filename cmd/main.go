@@ -116,7 +116,7 @@ func main() {
 
 	// set up logrus logging
 	//TODO: replace with zap/apex log library
-	if CLI.Debug {
+	if CLI.Verbose {
 		logrus.SetLevel(logrus.DebugLevel)
 	} else {
 		logrus.SetLevel(logrus.InfoLevel)
