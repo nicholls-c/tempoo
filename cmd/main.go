@@ -30,11 +30,6 @@ type AddWorklogCmd struct {
 	Date     *string `help:"Date for the worklog in DD.MM.YYYY format (defaults to today)" short:"D"`
 }
 
-// RemoveWorklogCmd represents the remove worklog command
-type RemoveWorklogCmd struct {
-	IssueKey string `help:"Jira issue key (e.g., PROJ-123)" short:"i" required:""`
-}
-
 // run executes the add worklog command
 func (cmd *AddWorklogCmd) Run() error {
 	tempoo, err := internal.NewTempoo()
@@ -43,6 +38,11 @@ func (cmd *AddWorklogCmd) Run() error {
 	}
 
 	return tempoo.AddWorklog(cmd.IssueKey, cmd.Time, cmd.Date)
+}
+
+// RemoveWorklogCmd represents the remove worklog command
+type RemoveWorklogCmd struct {
+	IssueKey string `help:"Jira issue key (e.g., PROJ-123)" short:"i" required:""`
 }
 
 // run executes the remove worklog command
@@ -84,10 +84,26 @@ func (cmd *RemoveWorklogCmd) Run() error {
 	return nil
 }
 
+// ListWorklogsCmd represents the list worklogs command
+type ListWorklogsCmd struct {
+	IssueKey string `help:"Jira issue key (e.g., PROJ-123)" short:"i" required:""`
+}
+
+// run executes the list worklogs command
+func (cmd *ListWorklogsCmd) Run() error {
+	tempoo, err := internal.NewTempoo()
+	if err != nil {
+		return err
+	}
+
+	return tempoo.ListWorklogs(cmd.IssueKey)
+}
+
 // Kong CLI struct
 var CLI struct {
 	AddWorklog    AddWorklogCmd    `cmd:"add-worklog" help:"Add a worklog to a Jira issue"`
 	RemoveWorklog RemoveWorklogCmd `cmd:"remove-worklog" help:"Remove all user worklogs from a Jira issue"`
+	ListWorklogs  ListWorklogsCmd  `cmd:"list-worklogs" help:"List all worklogs for a Jira issue"`
 
 	Verbose bool `help:"Enable debug logging"`
 	Version bool `help:"Show version" short:"v"`

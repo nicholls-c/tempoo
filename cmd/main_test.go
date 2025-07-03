@@ -284,22 +284,24 @@ func TestCLIStruct(t *testing.T) {
 	// Reset CLI to ensure clean state
 	CLI = struct {
 		AddWorklog    AddWorklogCmd    `cmd:"add-worklog" help:"Add a worklog to a Jira issue"`
-		RemoveWorklog RemoveWorklogCmd `cmd:"remove-worklog" help:"Remove a worklog from a Jira issue"`
-		Debug         bool             `help:"Enable debug logging" short:"d"`
+		RemoveWorklog RemoveWorklogCmd `cmd:"remove-worklog" help:"Remove all user worklogs from a Jira issue"`
+		ListWorklogs  ListWorklogsCmd  `cmd:"list-worklogs" help:"List all worklogs for a Jira issue"`
+		Verbose       bool             `help:"Enable debug logging"`
+		Version       bool             `help:"Show version" short:"v"`
 	}{}
 
 	// Test default values
-	if CLI.Debug != false {
+	if CLI.Verbose != false {
 		t.Error("CLI.Debug should default to false")
 	}
 
 	// Test setting values
-	CLI.Debug = true
+	CLI.Verbose = true
 	CLI.AddWorklog.IssueKey = "TEST-123"
 	CLI.AddWorklog.Time = "2h"
 	CLI.RemoveWorklog.IssueKey = "TEST-456"
 
-	if CLI.Debug != true {
+	if CLI.Verbose != true {
 		t.Error("CLI.Debug should be true after setting")
 	}
 

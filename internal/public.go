@@ -3,30 +3,10 @@ package internal
 import (
 	"encoding/json"
 	"fmt"
-	"strconv"
-	"strings"
 	"time"
 
 	"github.com/apex/log"
 )
-
-func (t *Tempoo) validateIssueKey(issueKey string) error {
-	issueURL := fmt.Sprintf("%s/issue/%s", JiraAPIRootURL, issueKey)
-	log.Debugf("Validating issue key: %s", issueURL)
-
-	resp, err := t.client.R().Get(issueURL)
-	if err != nil {
-		log.Errorf("Request failed: %v", err)
-		return &TempooError{Message: "API request failed", Cause: err}
-	}
-
-	if resp.StatusCode() != 200 {
-		return &InvalidIssueKeyError{IssueKey: issueKey}
-	}
-	log.Debugf("Validated issue key: %s", issueKey)
-
-	return nil
-}
 
 func (t *Tempoo) GetUserAccountID() (string, error) {
 	log.Info("Getting current user Atlassian account ID...")
@@ -169,32 +149,6 @@ func (t *Tempoo) AddWorklog(issueKey, worklogTime string, dateStr *string) error
 	return &TempooError{Message: fmt.Sprintf("Failed to add worklog: %s", resp.Status())}
 }
 
-// parseDateString parses date string in DD.MM.YYYY format
-func parseDateString(dateStr string) (time.Time, error) {
-	parts := strings.Split(dateStr, ".")
-	if len(parts) != 3 {
-		return time.Time{}, &TempooError{Message: fmt.Sprintf("Invalid date format '%s'. Expected DD.MM.YYYY", dateStr)}
-	}
-
-	day, err := strconv.Atoi(parts[0])
-	if err != nil {
-		return time.Time{}, &TempooError{Message: fmt.Sprintf("Invalid day in date '%s'", dateStr)}
-	}
-
-	month, err := strconv.Atoi(parts[1])
-	if err != nil {
-		return time.Time{}, &TempooError{Message: fmt.Sprintf("Invalid month in date '%s'", dateStr)}
-	}
-
-	year, err := strconv.Atoi(parts[2])
-	if err != nil {
-		return time.Time{}, &TempooError{Message: fmt.Sprintf("Invalid year in date '%s'", dateStr)}
-	}
-
-	date := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
-	return date, nil
-}
-
 func (t *Tempoo) DeleteWorklog(issueKey, worklogID string) error {
 	log.Debugf("Deleting worklog %s for %s", worklogID, issueKey)
 
@@ -209,5 +163,50 @@ func (t *Tempoo) DeleteWorklog(issueKey, worklogID string) error {
 	}
 
 	log.Infof("Deleted worklog %s for %s", worklogID, issueKey)
+	return nil
+}
+
+// ListWorklogs lists all worklogs for a given issue key
+func (t *Tempoo) ListWorklogs(issueKey string) error {
+	log.Infof("Listing worklogs for %s", issueKey)
+
+	// validate the issue key
+	if err := t.validateIssueKey(issueKey); err != nil {
+		return err
+	}
+
+	// get the worklogs for the issue
+	resp, err := t.client.R().Get(fmt.Sprintf("%s/issue/%s/worklog", JiraAPIRootURL, issueKey))
+	if err != nil {
+		log.Errorf("Request failed: %v", err)
+		return &TempooError{Message: "API request failed", Cause: err}
+	}
+
+	// check if the request was successful
+	if resp.StatusCode() != 200 {
+		return &TempooError{Message: fmt.Sprintf("Failed to list worklogs: %s", resp.Status())}
+	}
+
+	// responseData is a map[string]interface{} type
+	var responseData JiraResponse
+	// unmarshal the response body into responseData
+	if err := json.Unmarshal(resp.Body(), &responseData); err != nil {
+		return &TempooError{Message: "Failed to parse worklog data", Cause: err}
+	}
+
+	// parse responseData as a list of worklogs
+	worklogs, ok := responseData["worklogs"].([]interface{})
+	if !ok {
+		return &TempooError{Message: "Worklogs not found in response data"}
+	}
+
+	if len(worklogs) == 0 {
+		log.Infof("No worklogs found for issue %s", issueKey)
+		return nil
+	} else {
+		log.Infof("Found %d worklog(s) for issue %s:", len(worklogs))
+		t.printWorklogs(worklogs)
+	}
+
 	return nil
 }
