@@ -6,9 +6,21 @@ import (
 	"tempoo/internal"
 
 	"github.com/alecthomas/kong"
-	"github.com/charmbracelet/lipgloss"
 	"github.com/sirupsen/logrus"
 )
+
+// version will be set by goreleaser at build time
+var version = "0.0.1-dev"
+
+// VersionCmd represents the version command
+type VersionCmd struct {
+}
+
+// Run executes the version command
+func (cmd *VersionCmd) Run() error {
+	fmt.Println(version)
+	return nil
+}
 
 // AddWorklogCmd represents the add worklog command
 type AddWorklogCmd struct {
@@ -22,7 +34,7 @@ type RemoveWorklogCmd struct {
 	IssueKey string `help:"Jira issue key (e.g., PROJ-123)" short:"i" required:""`
 }
 
-// Run executes the add worklog command
+// run executes the add worklog command
 func (cmd *AddWorklogCmd) Run() error {
 	tempoo, err := internal.NewTempoo()
 	if err != nil {
@@ -32,21 +44,21 @@ func (cmd *AddWorklogCmd) Run() error {
 	return tempoo.AddWorklog(cmd.IssueKey, cmd.Time, cmd.Date)
 }
 
-// Run executes the remove worklog command
+// run executes the remove worklog command
 func (cmd *RemoveWorklogCmd) Run() error {
 	tempoo, err := internal.NewTempoo()
 	if err != nil {
 		return err
 	}
 
-	// Get current user's account ID
+	// get current user's account ID
 	userID, err := tempoo.GetUserAccountID()
 	if err != nil {
 		return err
 	}
 	logrus.Debugf("User ID: %s", userID)
 
-	// Get worklogs for the user
+	// get worklogs for the user
 	worklogIDs, err := tempoo.GetWorklogs(cmd.IssueKey, userID)
 	if err != nil {
 		return err
@@ -59,7 +71,7 @@ func (cmd *RemoveWorklogCmd) Run() error {
 		return nil
 	}
 
-	// Delete all worklogs for the user
+	// delete all worklogs for the user
 	for _, worklogID := range worklogIDs {
 		logrus.Debugf("Deleting worklog ID: %s", worklogID)
 		if err := tempoo.DeleteWorklog(cmd.IssueKey, worklogID); err != nil {
@@ -71,57 +83,38 @@ func (cmd *RemoveWorklogCmd) Run() error {
 	return nil
 }
 
-func createSplash(version string) string {
-	titleStyle := lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.Color("#FF6B6B")).
-		Align(lipgloss.Center)
-
-	subtitleStyle := lipgloss.NewStyle().
-		Italic(true).
-		Foreground(lipgloss.Color("#FFA500")).
-		Align(lipgloss.Center)
-
-	versionStyle := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("#90EE90")).
-		Align(lipgloss.Center)
-
-	return fmt.Sprintf("%s\n\n%s\n\n%s",
-		titleStyle.Render("Tem💩"),
-		subtitleStyle.Render("Because life is too short."),
-		versionStyle.Render(fmt.Sprintf("Version: %s", version)),
-	)
-}
-
 // Kong CLI struct
 var CLI struct {
 	AddWorklog    AddWorklogCmd    `cmd:"add-worklog" help:"Add a worklog to a Jira issue"`
 	RemoveWorklog RemoveWorklogCmd `cmd:"remove-worklog" help:"Remove all user worklogs from a Jira issue"`
 
-	Debug bool `help:"Enable debug logging" short:"d"`
+	Debug   bool `help:"Enable debug logging" short:"d"`
+	Version bool `help:"Show version" short:"v"`
 }
 
-// Main function
+// main function
 func main() {
-	// print help by default
-	if len(os.Args) == 1 {
-		os.Args = append(os.Args, "--help")
+	// check for version flag before parsing and print
+	for _, arg := range os.Args[1:] {
+		if arg == "--version" || arg == "-v" {
+			fmt.Println(version)
+			os.Exit(0)
+		}
 	}
 
-	// set up version
-	version := "0.0.1"
-
-	// splash graphics
-	splash := createSplash(version)
+	// print help by default unless -v flag is set
+	if len(os.Args) == 1 && !CLI.Version {
+		os.Args = append(os.Args, "--help")
+	}
 
 	// set up kong CLI
 	ctx := kong.Parse(&CLI,
 		kong.Name("tempoo"),
-		kong.Description(splash),
+		kong.Description("tem💩, because life is too short.\n\nA CLI tool for managing Jira worklogs."),
 		kong.UsageOnError(),
 	)
 
-	// Set up logrus logging
+	// set up logrus logging
 	//TODO: replace with zap/apex log library
 	if CLI.Debug {
 		logrus.SetLevel(logrus.DebugLevel)
@@ -130,7 +123,7 @@ func main() {
 	}
 	logrus.SetReportCaller(false)
 
-	// Execute the command
+	// execute kong
 	err := ctx.Run()
 	ctx.FatalIfErrorf(err)
 }
