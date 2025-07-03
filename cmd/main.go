@@ -89,8 +89,8 @@ var CLI struct {
 	AddWorklog    AddWorklogCmd    `cmd:"add-worklog" help:"Add a worklog to a Jira issue"`
 	RemoveWorklog RemoveWorklogCmd `cmd:"remove-worklog" help:"Remove all user worklogs from a Jira issue"`
 
-	Verbose bool `help:"Enable debug logging" short:"v"`
-	Version bool `help:"Show version" short:"V"`
+	Verbose bool `help:"Enable debug logging"`
+	Version bool `help:"Show version" short:"v"`
 }
 
 // main function
