@@ -19,13 +19,13 @@ const (
 	JiraAPIRootURL = "https://" + JiraFQDN + "/rest/api/3"
 )
 
-// Custom error types
+// custom error types
 type TempooError struct {
 	Message string
 	Cause   error
 }
 
-// Error returns the error message
+// error returns the error message
 func (e *TempooError) Error() string {
 	if e.Cause != nil {
 		return fmt.Sprintf("%s: %v", e.Message, e.Cause)
@@ -38,16 +38,16 @@ type InvalidIssueKeyError struct {
 	IssueKey string
 }
 
-// Error returns the error message
+// error returns the error message
 func (e *InvalidIssueKeyError) Error() string {
 	return fmt.Sprintf("Issue key %s is not valid", e.IssueKey)
 }
 
-// Type aliases for better readability
+// type aliases for better readability
 type JiraResponse map[string]interface{}
 type WorklogData map[string]interface{}
 
-// Tempoo client struct
+// tempoo client struct
 type Tempoo struct {
 	email    string
 	apiToken string
@@ -177,7 +177,7 @@ func (t *Tempoo) GetWorklogs(issueKey, userID string) ([]string, error) {
 			continue
 		}
 
-		// Check if this worklog belongs to the user
+		// check if this worklog belongs to the user
 		author, ok := worklog["author"].(map[string]interface{})
 		if !ok {
 			continue
@@ -188,13 +188,13 @@ func (t *Tempoo) GetWorklogs(issueKey, userID string) ([]string, error) {
 			continue
 		}
 
-		// Get the worklog ID
+		// get the worklog ID
 		worklogID, ok := worklog["id"]
 		if !ok {
 			continue
 		}
 
-		// Convert to string (it might be a number)
+		// convert to string (it might be a number)
 		worklogIDStr := fmt.Sprintf("%v", worklogID)
 		worklogsForUser = append(worklogsForUser, worklogIDStr)
 	}
@@ -237,7 +237,7 @@ func (t *Tempoo) AddWorklog(issueKey, worklogTime string, dateStr *string) error
 		workDate = parsedDate
 	}
 
-	// Create ISO timestamp for 08:30 AM on the specified date
+	// create ISO timestamp for 08:30 AM on the specified date
 	started := time.Date(
 		workDate.Year(), workDate.Month(), workDate.Day(),
 		8, 30, 0, 751000000, // 08:30:00.751
