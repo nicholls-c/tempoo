@@ -1,9 +1,12 @@
 package main
 
 import (
+	"fmt"
+	"os"
 	"tempoo/internal"
 
 	"github.com/alecthomas/kong"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/sirupsen/logrus"
 )
 
@@ -68,19 +71,53 @@ func (cmd *RemoveWorklogCmd) Run() error {
 	return nil
 }
 
+func createSplash(version string) string {
+	titleStyle := lipgloss.NewStyle().
+		Bold(true).
+		Foreground(lipgloss.Color("#FF6B6B")).
+		Align(lipgloss.Center)
+
+	subtitleStyle := lipgloss.NewStyle().
+		Italic(true).
+		Foreground(lipgloss.Color("#FFA500")).
+		Align(lipgloss.Center)
+
+	versionStyle := lipgloss.NewStyle().
+		Foreground(lipgloss.Color("#90EE90")).
+		Align(lipgloss.Center)
+
+	return fmt.Sprintf("%s\n\n%s\n\n%s",
+		titleStyle.Render("Tem💩"),
+		subtitleStyle.Render("Because life is too short."),
+		versionStyle.Render(fmt.Sprintf("Version: %s", version)),
+	)
+}
+
 // Kong CLI struct
 var CLI struct {
 	AddWorklog    AddWorklogCmd    `cmd:"add-worklog" help:"Add a worklog to a Jira issue"`
-	RemoveWorklog RemoveWorklogCmd `cmd:"remove-worklog" help:"Remove a worklog from a Jira issue"`
+	RemoveWorklog RemoveWorklogCmd `cmd:"remove-worklog" help:"Remove all user worklogs from a Jira issue"`
 
 	Debug bool `help:"Enable debug logging" short:"d"`
 }
 
 // Main function
 func main() {
+	// print help by default
+	if len(os.Args) == 1 {
+		os.Args = append(os.Args, "--help")
+	}
+
+	// set up version
+	version := "0.0.1"
+
+	// splash graphics
+	splash := createSplash(version)
+
+	// set up kong CLI
 	ctx := kong.Parse(&CLI,
 		kong.Name("tempoo"),
-		kong.Description("A CLI for the Tempoo API"),
+		kong.Description(splash),
 		kong.UsageOnError(),
 	)
 
