@@ -45,7 +45,7 @@ Navigate to the [release](https://github.com/nicholls-c/tempoo/releases) page fo
 
 1. Download release using `gh` cli:
    ```sh
-   gh release download v0.1.4 --pattern "tempoo" -R nicholls-c/tempoo-go --clobber
+   gh release download v0.1.4 --pattern "tempoo" -R nicholls-c/tempoo --clobber
    ```
 2. Make exectable:
    ```sh
@@ -60,7 +60,7 @@ Navigate to the [release](https://github.com/nicholls-c/tempoo/releases) page fo
 
 1. Download release using `gh` cli:
    ```sh
-   gh release download v0.1.2 --pattern "tempoo.exe" -R nicholls-c/tempoo-go --clobber
+   gh release download v0.1.2 --pattern "tempoo.exe" -R nicholls-c/tempoo --clobber
    ```
 2. Validate:
    ```pwsh
@@ -80,14 +80,14 @@ Expose user email address and jira api token as env vars.
 #### Linux/WSL
 
 ```sh
-export JIRA_EMAIL=<firstname.lastname>@commify.com
+export JIRA_EMAIL=<firstname.lastname>@emaildomain.com
 export JIRA_API_TOKEN=myapitoken
 ```
 
 #### Windows
 
 ```powershell
-[string]$env:JIRA_EMAIL = "<firstname.lastname>@commify.com"
+[string]$env:JIRA_EMAIL = "<firstname.lastname>@emaildomain.com"
 [string]$env:$JIRA_API_TOKEN = "myapitoken"
 ```
 
