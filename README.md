@@ -1,35 +1,42 @@
-![Tempoo](./docs/images/tempoo.png)
-
-[![ci](https://github.com/nicholls-c/tempoo/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/nicholls-c/tempoo/actions/workflows/ci.yml)
-
-[![Latest Release](https://img.shields.io/github/v/release/nicholls-c/tempoo)](https://github.com/nicholls-c/tempoo/releases/latest)
-
-[![Dependabot Updates](https://github.com/nicholls-c/tempoo/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/nicholls-c/tempoo/actions/workflows/dependabot/dependabot-updates)
+# tempoo
 
 Automate the awful things.
+
+![Tempoo](./docs/images/tempoo.png)
 
 ---
 
 <br>
 
-- [Links](#links)
-- [Get](#get)
-  - [Linux/WSL](#linuxwsl)
-  - [Windows](#windows)
-- [Use](#use)
-  - [Authenticate](#authenticate)
-    - [Linux/WSL](#linuxwsl-1)
-    - [Windows](#windows-1)
-  - [Add worklog](#add-worklog)
-  - [Remove worklogs](#remove-worklogs)
-  - [List worklogs](#list-worklogs)
-  - [Show app version](#show-app-version)
-  - [Debug](#debug)
-- [Contributing](#contributing)
-  - [Pre Commit](#pre-commit)
-  - [Build](#build)
-  - [Test](#test)
-  - [Creating Release](#creating-release)
+[![ci](https://github.com/nicholls-c/tempoo/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/nicholls-c/tempoo/actions/workflows/ci.yml)
+
+[![Release](https://img.shields.io/github/v/release/nicholls-c/tempoo)](https://github.com/nicholls-c/tempoo/releases/latest)
+
+[![Dependabot Updates](https://github.com/nicholls-c/tempoo/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/nicholls-c/tempoo/actions/workflows/dependabot/dependabot-updates)
+
+---
+
+<br>
+
+- [tempoo](#tempoo)
+  - [Links](#links)
+  - [Get](#get)
+    - [Linux/WSL](#linuxwsl)
+    - [Windows](#windows)
+  - [Use](#use)
+    - [Authenticate](#authenticate)
+      - [Linux/WSL](#linuxwsl-1)
+      - [Windows](#windows-1)
+    - [Add worklog](#add-worklog)
+    - [Remove worklogs](#remove-worklogs)
+    - [List worklogs](#list-worklogs)
+    - [Show app version](#show-app-version)
+    - [Debug](#debug)
+  - [Contributing](#contributing)
+    - [Pre Commit](#pre-commit)
+    - [Build](#build)
+    - [Test](#test)
+    - [Creating Release](#creating-release)
 
 
 ## Links
