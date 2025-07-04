@@ -53,48 +53,6 @@ func (t *Tempoo) validateIssueKey(issueKey string) error {
 	return nil
 }
 
-// printWorklogs prints the worklogs in a readable format
-// func (t *Tempoo) printWorklogs(worklogs []interface{}) {
-// 	// iterate over the worklogs
-// 	for i, worklogInterface := range worklogs {
-// 		// worklogInterface is a map[string]interface{} type
-// 		worklog, ok := worklogInterface.(map[string]interface{})
-// 		if !ok {
-// 			continue
-// 		}
-
-// 		// extract timeSpent
-// 		timeSpent, ok := worklog["timeSpent"].(string)
-// 		if !ok {
-// 			timeSpent = "Unknown"
-// 		}
-
-// 		// extract started date and format it
-// 		startedStr, ok := worklog["started"].(string)
-// 		var dateStr string
-// 		if ok {
-// 			// parse the ISO timestamp and format as DD.MM.YYYY
-// 			if startedTime, err := time.Parse("2006-01-02T15:04:05.000-0700", startedStr); err == nil {
-// 				dateStr = startedTime.Format("02.01.2006")
-// 			} else {
-// 				dateStr = "Unknown"
-// 			}
-// 		} else {
-// 			dateStr = "Unknown"
-// 		}
-
-// 		// Extract author display name
-// 		authorName := "Unknown"
-// 		if author, ok := worklog["author"].(map[string]interface{}); ok {
-// 			if displayName, ok := author["displayName"].(string); ok {
-// 				authorName = displayName
-// 			}
-// 		}
-
-// 		log.Infof("  %d. %s - %s (by %s)", i+1, timeSpent, dateStr, authorName)
-// 	}
-// }
-
 func (t *Tempoo) printWorklogs(worklogs []interface{}) {
 
 	log.Infof("Total worklogs found: %d", len(worklogs))
