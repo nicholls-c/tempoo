@@ -29,6 +29,7 @@ Automate the awful things.
 ## Links
 
 - [Kong](https://github.com/alecthomas/kong)
+- [JIRA REST API](https://developer.atlassian.com/cloud/jira/platform/rest/v3/intro/)
 
 <br>
 
