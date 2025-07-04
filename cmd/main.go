@@ -62,13 +62,13 @@ func (cmd *AddWorklogCmd) Run(ctx *kong.Context) error {
 	return tempoo.AddWorklog(cmd.IssueKey, cmd.Time, cmd.Date)
 }
 
-// RemoveWorklogCmd represents the remove worklog command
-type RemoveWorklogCmd struct {
+// RemoveWorklogsCmd represents the remove worklog command
+type RemoveWorklogsCmd struct {
 	IssueKey string `help:"Jira issue key (e.g., PROJ-123)" short:"i"`
 }
 
 // Run executes the remove worklog command
-func (cmd *RemoveWorklogCmd) Run(ctx *kong.Context) error {
+func (cmd *RemoveWorklogsCmd) Run(ctx *kong.Context) error {
 	// Check if required parameters are provided
 	if cmd.IssueKey == "" {
 		fmt.Fprintf(ctx.Stderr, "Usage: %s\n", ctx.Command())
@@ -138,10 +138,10 @@ func (cmd *ListWorklogsCmd) Run(ctx *kong.Context) error {
 
 // Kong CLI struct
 var CLI struct {
-	AddWorklog    AddWorklogCmd    `cmd:"add-worklog" help:"Add a worklog to a Jira issue"`
-	RemoveWorklog RemoveWorklogCmd `cmd:"remove-worklog" help:"Remove all user worklogs from a Jira issue"`
-	ListWorklogs  ListWorklogsCmd  `cmd:"list-worklogs" help:"List all worklogs for a Jira issue"`
-	Version       VersionCmd       `cmd:"version" help:"Print the version of the CLI"`
+	AddWorklog     AddWorklogCmd     `cmd:"add-worklog" help:"Add a worklog to a Jira issue"`
+	RemoveWorklogs RemoveWorklogsCmd `cmd:"remove-worklogs" help:"Remove all user worklogs from a Jira issue"`
+	ListWorklogs   ListWorklogsCmd   `cmd:"list-worklogs" help:"List all worklogs for a Jira issue"`
+	Version        VersionCmd        `cmd:"version" help:"Print the version of the CLI"`
 
 	// Add the completion installation command
 	InstallCompletions kongplete.InstallCompletions `cmd:"install-completions" help:"Install shell completions"`

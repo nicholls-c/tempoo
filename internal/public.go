@@ -166,7 +166,7 @@ func (t *Tempoo) DeleteWorklog(issueKey, worklogID string) error {
 	return nil
 }
 
-// ListWorklogs lists all worklogs for a given issue key
+// ListWorklogs lists all worklogs for a given issue key for the current user
 func (t *Tempoo) ListWorklogs(issueKey string) error {
 	log.Infof("Listing worklogs for %s", issueKey)
 
@@ -174,6 +174,13 @@ func (t *Tempoo) ListWorklogs(issueKey string) error {
 	if err := t.validateIssueKey(issueKey); err != nil {
 		return err
 	}
+
+	// get current user's account ID
+	userID, err := t.GetUserAccountID()
+	if err != nil {
+		return fmt.Errorf("failed to get user account ID: %w", err)
+	}
+	log.Debugf("User ID: %s", userID)
 
 	// get the worklogs for the issue
 	resp, err := t.client.R().Get(fmt.Sprintf("%s/issue/%s/worklog", JiraAPIRootURL, issueKey))
@@ -195,17 +202,45 @@ func (t *Tempoo) ListWorklogs(issueKey string) error {
 	}
 
 	// parse responseData as a list of worklogs
-	worklogs, ok := responseData["worklogs"].([]interface{})
+	worklogsInterface, ok := responseData["worklogs"]
 	if !ok {
 		return &TempooError{Message: "Worklogs not found in response data"}
 	}
 
-	if len(worklogs) == 0 {
-		log.Infof("No worklogs found for issue %s", issueKey)
+	worklogs, ok := worklogsInterface.([]interface{})
+	if !ok {
+		return &TempooError{Message: "Worklogs not found in response data"}
+	}
+
+	// filter worklogs for the current user
+	var userWorklogs []interface{}
+	for _, worklogInterface := range worklogs {
+		worklog, ok := worklogInterface.(map[string]interface{})
+		if !ok {
+			continue
+		}
+
+		// check if this worklog belongs to the user
+		author, ok := worklog["author"].(map[string]interface{})
+		if !ok {
+			continue
+		}
+
+		authorAccountID, ok := author["accountId"].(string)
+		if !ok || authorAccountID != userID {
+			continue
+		}
+
+		// this worklog belongs to the current user
+		userWorklogs = append(userWorklogs, worklogInterface)
+	}
+
+	if len(userWorklogs) == 0 {
+		log.Infof("No worklogs found for issue %s for current user", issueKey)
 		return nil
 	} else {
-		log.Infof("Found %d worklog(s) for issue %s:", len(worklogs))
-		t.printWorklogs(worklogs)
+		log.Infof("Found %d worklog(s) for issue %s for current user:", len(userWorklogs), issueKey)
+		t.printWorklogs(userWorklogs)
 	}
 
 	return nil
