@@ -2,7 +2,6 @@
 
 - [tempoo](#tempoo)
   - [Links](#links)
-  - [Auth](#auth)
   - [Get](#get)
     - [Linux/WSL](#linuxwsl)
     - [Windows](#windows)
@@ -25,18 +24,6 @@
 ## Links
 
 - [Kong](https://github.com/alecthomas/kong)
-- [Jira Example](https://esendex.atlassian.net/browse/INF-88)
-
-<br>
-
-## Auth
-
-Expose user email address and Jira API token:
-
-```sh
-export JIRA_EMAIL=christian.nicholls@commify.com
-export JIRA_API_TOKEN=asdasdasdasdasdasdasdasdasd
-```
 
 <br>
 
