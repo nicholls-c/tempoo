@@ -4,6 +4,8 @@
 
 [![Latest Release](https://img.shields.io/github/v/release/nicholls-c/tempoo)](https://github.com/nicholls-c/tempoo/releases/latest)
 
+[![Dependabot Updates](https://github.com/nicholls-c/tempoo/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/nicholls-c/tempoo/actions/workflows/dependabot/dependabot-updates)
+
 Automate the awful things.
 
 ---
@@ -45,7 +47,7 @@ Navigate to the [release](https://github.com/nicholls-c/tempoo/releases) page fo
 
 1. Download release using `gh` cli:
    ```sh
-   gh release download v0.1.4 --pattern "tempoo" -R nicholls-c/tempoo --clobber
+   gh release download v0.2.1 --pattern "tempoo" -R nicholls-c/tempoo --clobber
    ```
 2. Make exectable:
    ```sh
@@ -97,10 +99,10 @@ export JIRA_API_TOKEN=myapitoken
 
 ```sh
 # defaults to today
-tempoo add-worklog --issue-key INF-88 --time 3
+tempoo add-worklog --issue-key INF-88 --hours 1.5
 
 # for specified date
-tempoo add-worklog --issue-key INF-88 --time 8 --date 01.07.2025 --verbose
+tempoo add-worklog -i INF-88 -t 8 --date 01.07.2025 --verbose
 ```
 
 <br>
@@ -116,7 +118,7 @@ tempoo remove-worklogs --issue-key INF-88 --verbose
 ### List worklogs
 
 ```sh
-tempoo list-worklogs -i INF-88
+tempoo list-worklogs --issue-key INF-88 --verbose
 ```
 
 <br>
