@@ -104,6 +104,16 @@ func (t *Tempoo) GetWorklogs(issueKey, userID string) ([]string, error) {
 func (t *Tempoo) AddWorklog(issueKey, worklogTime string, dateStr *string) error {
 	log.Infof("Adding worklog to %s", issueKey)
 
+	// Validate and parse the worklog hours
+	hours, err := validateWorklogHours(worklogTime)
+	if err != nil {
+		return err
+	}
+
+	// Convert hours to Jira format
+	jiraTimeFormat := convertHoursToJiraFormat(hours)
+	log.Debugf("Converted %s hours to Jira format: %s", worklogTime, jiraTimeFormat)
+
 	// Use current date if none provided
 	var workDate time.Time
 	if dateStr == nil || *dateStr == "" {
@@ -126,7 +136,7 @@ func (t *Tempoo) AddWorklog(issueKey, worklogTime string, dateStr *string) error
 	log.Debugf("Started timestamp: %s", started)
 
 	payload := map[string]string{
-		"timeSpent": worklogTime,
+		"timeSpent": jiraTimeFormat,
 		"started":   started,
 	}
 
@@ -142,7 +152,7 @@ func (t *Tempoo) AddWorklog(issueKey, worklogTime string, dateStr *string) error
 	}
 
 	if resp.StatusCode() == 201 {
-		log.Infof("Worklog added to %s", issueKey)
+		log.Infof("Added worklog of %s hours to %s", worklogTime, issueKey)
 		return nil
 	}
 

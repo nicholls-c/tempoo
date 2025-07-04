@@ -6,6 +6,7 @@ require (
 	github.com/alecthomas/kong v1.12.0
 	github.com/apex/log v1.9.0
 	github.com/go-resty/resty/v2 v2.16.5
+	github.com/willabides/kongplete v0.4.0
 )
 
 require (
@@ -17,7 +18,6 @@ require (
 	github.com/pkg/errors v0.8.1 // indirect
 	github.com/posener/complete v1.2.3 // indirect
 	github.com/riywo/loginshell v0.0.0-20200815045211-7d26008be1ab // indirect
-	github.com/willabides/kongplete v0.4.0 // indirect
 	golang.org/x/net v0.33.0 // indirect
 	golang.org/x/sys v0.30.0 // indirect
 )

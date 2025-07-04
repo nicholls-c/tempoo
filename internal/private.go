@@ -117,3 +117,44 @@ func (t *Tempoo) printWorklogs(worklogs []interface{}) {
 		log.Infof("  %d. %s - %s (by %s) [ID: %s]", i+1, timeDisplay, dateStr, authorName, worklogID)
 	}
 }
+
+// validateWorklogHours validates that the hours input is in the correct format
+// Accepts whole numbers or .5 increments between 0.5 and 8 hours
+func validateWorklogHours(hoursStr string) (float64, error) {
+	// Parse the string as a float
+	hours, err := strconv.ParseFloat(hoursStr, 64)
+	if err != nil {
+		return 0, &TempooError{Message: fmt.Sprintf("Invalid hours format '%s'. Expected a number (e.g., 1, 2.5, 8)", hoursStr)}
+	}
+
+	// Check minimum value
+	if hours < 0.5 {
+		return 0, &TempooError{Message: fmt.Sprintf("Hours must be at least 0.5, got %.1f", hours)}
+	}
+
+	// Check maximum value
+	if hours > 8 {
+		return 0, &TempooError{Message: fmt.Sprintf("Hours cannot exceed 8, got %.1f", hours)}
+	}
+
+	// Check that it's either a whole number or .5 increment
+	// Multiply by 2 to check if it's a valid half-hour increment
+	doubled := hours * 2
+	if doubled != float64(int(doubled)) {
+		return 0, &TempooError{Message: fmt.Sprintf("Hours must be whole numbers or .5 increments (e.g., 1, 1.5, 2, 2.5), got %.1f", hours)}
+	}
+
+	return hours, nil
+}
+
+// convertHoursToJiraFormat converts hours to Jira time format (e.g., "2h", "1h 30m")
+func convertHoursToJiraFormat(hours float64) string {
+	wholeHours := int(hours)
+	minutes := int((hours - float64(wholeHours)) * 60)
+
+	if minutes == 0 {
+		return fmt.Sprintf("%dh", wholeHours)
+	} else {
+		return fmt.Sprintf("%dh %dm", wholeHours, minutes)
+	}
+}

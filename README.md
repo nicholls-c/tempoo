@@ -97,10 +97,10 @@ export JIRA_API_TOKEN=myapitoken
 
 ```sh
 # defaults to today
-tempoo add-worklog --issue-key INF-88 --time 3h
+tempoo add-worklog --issue-key INF-88 --time 3
 
 # for specified date
-tempoo add-worklog --issue-key INF-88 --time 8h --date 01.07.2025
+tempoo add-worklog --issue-key INF-88 --time 8 --date 01.07.2025 --verbose
 ```
 
 <br>
@@ -108,7 +108,7 @@ tempoo add-worklog --issue-key INF-88 --time 8h --date 01.07.2025
 ### Remove worklogs
 
 ```sh
-tempoo remove-worklog --issue-key INF-88 --verbose
+tempoo remove-worklogs --issue-key INF-88 --verbose
 ```
 
 <br>
@@ -158,6 +158,9 @@ goreleaser check
 
 # build
 goreleaser release --snapshot --clean
+
+sudo mv dist/tempoo-go_linux_amd64_v1/tempoo /usr/local/bin/
+tempoo version # should have SNAPSHOT in the version string
 ```
 
 <br>

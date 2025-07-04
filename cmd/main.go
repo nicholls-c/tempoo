@@ -29,7 +29,7 @@ func (cmd *VersionCmd) Run() error {
 // AddWorklogCmd represents the add worklog command
 type AddWorklogCmd struct {
 	IssueKey string  `help:"Jira issue key (e.g., PROJ-123)" short:"i"`
-	Time     string  `help:"Time to log (e.g., 1h 30m, 2h, 45m)" short:"t"`
+	Hours    string  `help:"Hours to log (e.g., 1, 2.5, 8). Accepts whole numbers or .5 increments between 0.5 and 8 hours" short:"t"`
 	Date     *string `help:"Date for the worklog in DD.MM.YYYY format (defaults to today)" short:"D"`
 }
 
@@ -48,7 +48,7 @@ func getFactory() (*internal.TempooFactory, error) {
 // Run executes the add worklog command
 func (cmd *AddWorklogCmd) Run(ctx *kong.Context) error {
 	// Check if required parameters are provided
-	if cmd.IssueKey == "" || cmd.Time == "" {
+	if cmd.IssueKey == "" || cmd.Hours == "" {
 		fmt.Fprintf(ctx.Stderr, "Usage: %s\n", ctx.Command())
 		ctx.PrintUsage(false)
 		return nil
@@ -59,7 +59,7 @@ func (cmd *AddWorklogCmd) Run(ctx *kong.Context) error {
 		return err
 	}
 	tempoo := factory.GetClient()
-	return tempoo.AddWorklog(cmd.IssueKey, cmd.Time, cmd.Date)
+	return tempoo.AddWorklog(cmd.IssueKey, cmd.Hours, cmd.Date)
 }
 
 // RemoveWorklogsCmd represents the remove worklog command
