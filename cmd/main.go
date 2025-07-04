@@ -8,6 +8,7 @@ import (
 	"github.com/alecthomas/kong"
 	"github.com/apex/log"
 	"github.com/apex/log/handlers/cli"
+	"github.com/willabides/kongplete"
 )
 
 // version will be set by goreleaser at build time
@@ -142,6 +143,9 @@ var CLI struct {
 	ListWorklogs  ListWorklogsCmd  `cmd:"list-worklogs" help:"List all worklogs for a Jira issue"`
 	Version       VersionCmd       `cmd:"version" help:"Print the version of the CLI"`
 
+	// Add the completion installation command
+	InstallCompletions kongplete.InstallCompletions `cmd:"install-completions" help:"Install shell completions"`
+
 	Verbose bool `help:"Enable debug logging"`
 }
 
@@ -153,11 +157,20 @@ func main() {
 	}
 
 	// set up kong CLI
-	ctx := kong.Parse(&CLI,
+	parser := kong.Must(&CLI,
 		kong.Name("tempoo"),
 		kong.Description("tem💩, because life is too short.\n\nA CLI tool for managing Jira worklogs."),
 		kong.UsageOnError(),
 	)
+
+	// Add completion support
+	kongplete.Complete(parser)
+
+	// Parse the arguments
+	ctx, err := parser.Parse(os.Args[1:])
+	if err != nil {
+		parser.FatalIfErrorf(err)
+	}
 
 	// set up apex/log with CLI handler
 	log.SetHandler(cli.New(os.Stderr))
@@ -168,6 +181,6 @@ func main() {
 	}
 
 	// execute kong
-	err := ctx.Run()
+	err = ctx.Run()
 	ctx.FatalIfErrorf(err)
 }
