@@ -42,6 +42,8 @@ export JIRA_API_TOKEN=asdasdasdasdasdasdasdasdasd
 
 ## Get
 
+Navigate to the [release](https://github.com/nicholls-c/tempoo/releases) page for a list of all avaialable releases. Use the latest version by default unless told otherwise.
+
 ### Linux/WSL
 
 1. Download release using `gh` cli:
