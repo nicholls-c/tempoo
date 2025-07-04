@@ -102,12 +102,6 @@ var CLI struct {
 
 // main function
 func main() {
-	// Initialize the factory once at startup
-	var err error
-	tempooFactory, err = internal.NewTempooFactory()
-	if err != nil {
-		log.Fatalf("Failed to initialize Tempoo factory: %v", err)
-	}
 
 	// print help by default unless -v flag is set
 	if len(os.Args) == 1 && !CLI.Version {
@@ -127,6 +121,13 @@ func main() {
 		log.SetLevel(log.DebugLevel)
 	} else {
 		log.SetLevel(log.InfoLevel)
+	}
+
+	// Initialize the factory once at startup
+	var err error
+	tempooFactory, err = internal.NewTempooFactory()
+	if err != nil {
+		log.Fatalf("Failed to initialize Tempoo factory: %v", err)
 	}
 
 	// execute kong
