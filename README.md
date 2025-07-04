@@ -156,7 +156,8 @@ goreleaser release --snapshot --clean
 
 ### Test
 
-> [!CAUTION] All tests were cursor'd.
+> **Warning**
+> All tests were cursor'd
 
 ```sh
 go test -v ./...
