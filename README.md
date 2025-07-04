@@ -1,5 +1,9 @@
 ![Tempoo](./docs/images/tempoo.png)
 
+[![ci](https://github.com/nicholls-c/tempoo/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/nicholls-c/tempoo/actions/workflows/ci.yml)
+
+[![Latest Release](https://img.shields.io/github/v/release/nicholls-c/tempoo)](https://github.com/nicholls-c/tempoo/releases/latest)
+
 Automate the awful things.
 
 ---
