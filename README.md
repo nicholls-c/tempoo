@@ -48,7 +48,7 @@ Navigate to the [release](https://github.com/nicholls-c/tempoo/releases) page fo
 
 1. Download release using `gh` cli:
    ```sh
-   gh release download v0.1.2 --pattern "tempoo" -R nicholls-c/tempoo-go --clobber
+   gh release download v0.1.4 --pattern "tempoo" -R nicholls-c/tempoo-go --clobber
    ```
 2. Make exectable:
    ```sh
@@ -63,7 +63,7 @@ Navigate to the [release](https://github.com/nicholls-c/tempoo/releases) page fo
 
 1. Download release using `gh` cli:
    ```sh
-   gh release download v0.1.2 --pattern "tempoo" -R nicholls-c/tempoo-go --clobber
+   gh release download v0.1.2 --pattern "tempoo.exe" -R nicholls-c/tempoo-go --clobber
    ```
 2. Validate:
    ```pwsh
