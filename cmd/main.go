@@ -27,25 +27,59 @@ func (cmd *VersionCmd) Run() error {
 
 // AddWorklogCmd represents the add worklog command
 type AddWorklogCmd struct {
-	IssueKey string  `help:"Jira issue key (e.g., PROJ-123)" short:"i" required:""`
-	Time     string  `help:"Time to log (e.g., 1h 30m, 2h, 45m)" short:"t" required:""`
+	IssueKey string  `help:"Jira issue key (e.g., PROJ-123)" short:"i"`
+	Time     string  `help:"Time to log (e.g., 1h 30m, 2h, 45m)" short:"t"`
 	Date     *string `help:"Date for the worklog in DD.MM.YYYY format (defaults to today)" short:"D"`
 }
 
+// getFactory initializes and returns the tempoo factory
+func getFactory() (*internal.TempooFactory, error) {
+	if tempooFactory == nil {
+		var err error
+		tempooFactory, err = internal.NewTempooFactory()
+		if err != nil {
+			return nil, fmt.Errorf("failed to initialize Tempoo factory: %w", err)
+		}
+	}
+	return tempooFactory, nil
+}
+
 // Run executes the add worklog command
-func (cmd *AddWorklogCmd) Run() error {
-	tempoo := tempooFactory.GetClient()
+func (cmd *AddWorklogCmd) Run(ctx *kong.Context) error {
+	// Check if required parameters are provided
+	if cmd.IssueKey == "" || cmd.Time == "" {
+		fmt.Fprintf(ctx.Stderr, "Usage: %s\n", ctx.Command())
+		ctx.PrintUsage(false)
+		return nil
+	}
+
+	factory, err := getFactory()
+	if err != nil {
+		return err
+	}
+	tempoo := factory.GetClient()
 	return tempoo.AddWorklog(cmd.IssueKey, cmd.Time, cmd.Date)
 }
 
 // RemoveWorklogCmd represents the remove worklog command
 type RemoveWorklogCmd struct {
-	IssueKey string `help:"Jira issue key (e.g., PROJ-123)" short:"i" required:""`
+	IssueKey string `help:"Jira issue key (e.g., PROJ-123)" short:"i"`
 }
 
 // Run executes the remove worklog command
-func (cmd *RemoveWorklogCmd) Run() error {
-	tempoo := tempooFactory.GetClient()
+func (cmd *RemoveWorklogCmd) Run(ctx *kong.Context) error {
+	// Check if required parameters are provided
+	if cmd.IssueKey == "" {
+		fmt.Fprintf(ctx.Stderr, "Usage: %s\n", ctx.Command())
+		ctx.PrintUsage(false)
+		return nil
+	}
+
+	factory, err := getFactory()
+	if err != nil {
+		return err
+	}
+	tempoo := factory.GetClient()
 
 	// get current user's account ID
 	userID, err := tempoo.GetUserAccountID()
@@ -81,12 +115,23 @@ func (cmd *RemoveWorklogCmd) Run() error {
 
 // ListWorklogsCmd represents the list worklogs command
 type ListWorklogsCmd struct {
-	IssueKey string `help:"Jira issue key (e.g., PROJ-123)" short:"i" required:""`
+	IssueKey string `help:"Jira issue key (e.g., PROJ-123)" short:"i"`
 }
 
 // Run executes the list worklogs command
-func (cmd *ListWorklogsCmd) Run() error {
-	tempoo := tempooFactory.GetClient()
+func (cmd *ListWorklogsCmd) Run(ctx *kong.Context) error {
+	// Check if required parameters are provided
+	if cmd.IssueKey == "" {
+		fmt.Fprintf(ctx.Stderr, "Usage: %s\n", ctx.Command())
+		ctx.PrintUsage(false)
+		return nil
+	}
+
+	factory, err := getFactory()
+	if err != nil {
+		return err
+	}
+	tempoo := factory.GetClient()
 	return tempoo.ListWorklogs(cmd.IssueKey)
 }
 
@@ -95,16 +140,15 @@ var CLI struct {
 	AddWorklog    AddWorklogCmd    `cmd:"add-worklog" help:"Add a worklog to a Jira issue"`
 	RemoveWorklog RemoveWorklogCmd `cmd:"remove-worklog" help:"Remove all user worklogs from a Jira issue"`
 	ListWorklogs  ListWorklogsCmd  `cmd:"list-worklogs" help:"List all worklogs for a Jira issue"`
+	Version       VersionCmd       `cmd:"version" help:"Print the version of the CLI"`
 
 	Verbose bool `help:"Enable debug logging"`
-	Version bool `help:"Show version" short:"v"`
 }
 
 // main function
 func main() {
-
 	// print help by default unless -v flag is set
-	if len(os.Args) == 1 && !CLI.Version {
+	if len(os.Args) == 1 {
 		os.Args = append(os.Args, "--help")
 	}
 
@@ -123,14 +167,7 @@ func main() {
 		log.SetLevel(log.InfoLevel)
 	}
 
-	// Initialize the factory once at startup
-	var err error
-	tempooFactory, err = internal.NewTempooFactory()
-	if err != nil {
-		log.Fatalf("Failed to initialize Tempoo factory: %v", err)
-	}
-
 	// execute kong
-	err = ctx.Run()
+	err := ctx.Run()
 	ctx.FatalIfErrorf(err)
 }
