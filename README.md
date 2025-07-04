@@ -1,4 +1,4 @@
-# tempoo-go
+# tempoo
 
 - [tempoo-go](#tempoo-go)
   - [Links](#links)
@@ -49,7 +49,6 @@ export JIRA_API_TOKEN=asdasdasdasdasdasdasdasdasd
    sudo mv ./tempoo /usr/local/bin
    ```
 
-
 ### Windows
 
 1. Download release using `gh` cli:
@@ -60,6 +59,8 @@ export JIRA_API_TOKEN=asdasdasdasdasdasdasdasdasd
    ```pwsh
    ./tempoo.exe -h
    ```
+
+Or just download it from the releases pages manually :blush:
 
 <br>
 
