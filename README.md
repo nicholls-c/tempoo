@@ -1,24 +1,29 @@
-# tempoo
+![Tempoo](./docs/images/tempoo.png)
 
-- [tempoo](#tempoo)
-  - [Links](#links)
-  - [Get](#get)
-    - [Linux/WSL](#linuxwsl)
-    - [Windows](#windows)
-  - [Use](#use)
-    - [Authenticate](#authenticate)
-      - [Linux/WSL](#linuxwsl-1)
-      - [Windows](#windows-1)
-    - [Add worklog](#add-worklog)
-    - [Remove worklogs](#remove-worklogs)
-    - [List worklogs](#list-worklogs)
-    - [Show app version](#show-app-version)
-    - [Debug](#debug)
-  - [Contributing](#contributing)
-    - [Pre Commit](#pre-commit)
-    - [Build](#build)
-    - [Test](#test)
-    - [Creating Release](#creating-release)
+Automate the awful things.
+
+---
+
+<br>
+
+- [Links](#links)
+- [Get](#get)
+  - [Linux/WSL](#linuxwsl)
+  - [Windows](#windows)
+- [Use](#use)
+  - [Authenticate](#authenticate)
+    - [Linux/WSL](#linuxwsl-1)
+    - [Windows](#windows-1)
+  - [Add worklog](#add-worklog)
+  - [Remove worklogs](#remove-worklogs)
+  - [List worklogs](#list-worklogs)
+  - [Show app version](#show-app-version)
+  - [Debug](#debug)
+- [Contributing](#contributing)
+  - [Pre Commit](#pre-commit)
+  - [Build](#build)
+  - [Test](#test)
+  - [Creating Release](#creating-release)
 
 
 ## Links
